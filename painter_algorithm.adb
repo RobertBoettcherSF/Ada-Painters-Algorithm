@@ -7,10 +7,6 @@ package body Painter_Algorithm is
    function Max_Depth (P : Polygon) return Depth_Value is
       Result : Depth_Value;
    begin
-      if P.Vertex_Count = 0 then
-         raise Invalid_Polygon_Error;
-      end if;
-
       Result := P.Vertices (P.Vertices'First).Z;
       for I in P.Vertices'First + 1 .. P.Vertices'Last loop
          if P.Vertices (I).Z > Result then
@@ -142,17 +138,15 @@ package body Painter_Algorithm is
    ----------------------------------------------------------------------------
 
    procedure Sort_Polygons_Depth (Polygons : in out Polygon_Array) is
-      Temp : Polygon (Polygons (Polygons'First).Vertex_Count);
    begin
       if Polygons'Length <= 1 then
          return;
       end if;
 
-      -- Simple descending sort by Max_Depth (farthest first)
+      -- Descending sort by Max_Depth (farthest first)
       for I in Polygons'First .. Polygons'Last - 1 loop
          for J in I + 1 .. Polygons'Last loop
             if Max_Depth (Polygons (J)) > Max_Depth (Polygons (I)) then
-               -- Re-allocate Temp variant safely based on dynamic size
                declare
                   T : constant Polygon := Polygons (I);
                begin
@@ -266,15 +260,19 @@ package body Painter_Algorithm is
    procedure Render_Topological (Polygons : in Polygon_Array;
                                  Buffer   : in out Framebuffer) is
       N : constant Natural := Polygons'Length;
-      type Node_Index is range 1 .. N;
 
-      -- Adjacency matrix: Dep (I, J) is True if Polygon I must be drawn before J
-      Dep : array (Node_Index, Node_Index) of Boolean := (others => (others => False));
-      In_Degree : array (Node_Index) of Natural := (others => 0);
-      Processed : array (Node_Index) of Boolean := (others => False);
-      Total_Emitted : Natural := 0;
+      -- Dynamic array types indexed over the actual polygon indices
+      subtype Poly_Index is Positive range 1 .. (if N = 0 then 1 else N);
+      type Dep_Matrix is array (Poly_Index, Poly_Index) of Boolean;
+      type Count_Array is array (Poly_Index) of Natural;
+      type Seen_Array is array (Poly_Index) of Boolean;
 
-      P_Idx, Q_Idx : Node_Index;
+      Dep           : Dep_Matrix  := [others => [others => False]];
+      In_Degree     : Count_Array := [others => 0];
+      Processed     : Seen_Array  := [others => False];
+      Total_Emitted : Natural     := 0;
+
+      P_Idx, Q_Idx    : Poly_Index;
       Found_Candidate : Boolean;
    begin
       if N = 0 then
@@ -283,15 +281,15 @@ package body Painter_Algorithm is
 
       -- Construct dependency graph
       for I in Polygons'Range loop
-         P_Idx := Node_Index (I - Polygons'First + 1);
+         P_Idx := Poly_Index (I - Polygons'First + 1);
          for J in Polygons'Range loop
             if I /= J then
-               Q_Idx := Node_Index (J - Polygons'First + 1);
+               Q_Idx := Poly_Index (J - Polygons'First + 1);
                if Bounding_Boxes_Overlap_2D (Polygons (I), Polygons (J)) and then
                   Centroid_Depth (Polygons (I)) > Centroid_Depth (Polygons (J))
                then
                   Dep (P_Idx, Q_Idx) := True;
-                  In_Degree (Q_Idx) := In_Degree (Q_Idx) + 1;
+                  In_Degree (Q_Idx)  := In_Degree (Q_Idx) + 1;
                end if;
             end if;
          end loop;
@@ -300,7 +298,7 @@ package body Painter_Algorithm is
       -- Kahn's topological sort
       while Total_Emitted < N loop
          Found_Candidate := False;
-         for K in Node_Index loop
+         for K in 1 .. N loop
             if not Processed (K) and then In_Degree (K) = 0 then
                Found_Candidate := True;
                Processed (K) := True;
@@ -308,13 +306,13 @@ package body Painter_Algorithm is
 
                -- Render polygon K
                declare
-                  Original_Idx : constant Positive := Polygons'First + Natural (K) - 1;
+                  Original_Idx : constant Positive := Polygons'First + K - 1;
                begin
                   Rasterize_Polygon (Polygons (Original_Idx), Buffer);
                end;
 
                -- Remove outgoing edges
-               for M in Node_Index loop
+               for M in 1 .. N loop
                   if Dep (K, M) then
                      Dep (K, M) := False;
                      In_Degree (M) := In_Degree (M) - 1;
