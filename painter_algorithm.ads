@@ -36,10 +36,11 @@ package Painter_Algorithm is
       Z : Depth_Value := 0.0;
    end record;
 
+   subtype Vertex_Count_Range is Positive range 1 .. 64;
    type Vertex_Array is array (Positive range <>) of Point_3D;
 
    -- Convex polygon representation with at least 3 vertices
-   type Polygon (Vertex_Count : Positive := 3) is record
+   type Polygon (Vertex_Count : Vertex_Count_Range := 3) is record
       Id       : Positive;
       Color    : RGBA_Color;
       Vertices : Vertex_Array (1 .. Vertex_Count);
