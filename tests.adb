@@ -24,14 +24,12 @@ procedure Tests is
       return (Vertex_Count => 3,
               Id           => Id,
               Color        => C,
-              Vertices     => (1 => P1, 2 => P2, 3 => P3));
+              Vertices     => [1 => P1, 2 => P2, 3 => P3]);
    end Make_Triangle;
 
    Red_Color   : constant RGBA_Color := (Red => 255, Green => 0,   Blue => 0,   Alpha => 255);
    Green_Color : constant RGBA_Color := (Red => 0,   Green => 255, Blue => 0,   Alpha => 255);
    Blue_Color  : constant RGBA_Color := (Red => 0,   Green => 0,   Blue => 255, Alpha => 255);
-
-   Sample_Buffer : Framebuffer (0 .. 15, 0 .. 15);
 begin
    -- TEST 1 - Depth Calculations (Min, Max, Centroid)
    Put_Line ("TEST 1 - Depth Calculations");
@@ -97,7 +95,7 @@ begin
       P_Near : constant Polygon := Make_Triangle (1, Red_Color, (0.0, 0.0, 5.0), (2.0, 0.0, 5.0), (0.0, 2.0, 5.0));
       P_Mid  : constant Polygon := Make_Triangle (2, Green_Color, (0.0, 0.0, 15.0), (2.0, 0.0, 15.0), (0.0, 2.0, 15.0));
       P_Far  : constant Polygon := Make_Triangle (3, Blue_Color, (0.0, 0.0, 25.0), (2.0, 0.0, 25.0), (0.0, 2.0, 25.0));
-      List   : Polygon_Array := (1 => P_Near, 2 => P_Far, 3 => P_Mid);
+      List   : Polygon_Array := [1 => P_Near, 2 => P_Far, 3 => P_Mid];
    begin
       Sort_Polygons_Depth (List);
       Check ("5.1 First element has maximum depth", Max_Depth (List (1)) = 25.0);
@@ -111,7 +109,7 @@ begin
       Buf    : Framebuffer (0 .. 7, 0 .. 7);
       P_Back : constant Polygon := Make_Triangle (1, Red_Color, (0.0, 0.0, 50.0), (6.0, 0.0, 50.0), (0.0, 6.0, 50.0));
       P_Fore : constant Polygon := Make_Triangle (2, Blue_Color, (0.0, 0.0, 10.0), (6.0, 0.0, 10.0), (0.0, 6.0, 10.0));
-      List   : Polygon_Array := (1 => P_Fore, 2 => P_Back);
+      List   : Polygon_Array := [1 => P_Fore, 2 => P_Back];
    begin
       Clear_Framebuffer (Buf, Black_Color);
       Render_Standard (List, Buf);
@@ -126,7 +124,7 @@ begin
       P1 : constant Polygon := Make_Triangle (1, Red_Color, (0.0, 0.0, 10.0), (0.0, 0.0, 20.0), (0.0, 0.0, 30.0)); -- Mean 20
       P2 : constant Polygon := Make_Triangle (2, Blue_Color, (0.0, 0.0, 5.0), (0.0, 0.0, 5.0), (0.0, 0.0, 5.0));   -- Mean 5
       P3 : constant Polygon := Make_Triangle (3, Green_Color, (0.0, 0.0, 40.0), (0.0, 0.0, 40.0), (0.0, 0.0, 40.0)); -- Mean 40
-      Arr : Polygon_Array := (1 => P2, 2 => P1, 3 => P3);
+      Arr : Polygon_Array := [1 => P2, 2 => P1, 3 => P3];
    begin
       Sort_Polygons_Centroid (Arr);
       Check ("7.1 Highest centroid placed first", Centroid_Depth (Arr (1)) = 40.0);
@@ -140,7 +138,7 @@ begin
       Buf    : Framebuffer (0 .. 7, 0 .. 7);
       P_Back : constant Polygon := Make_Triangle (1, Green_Color, (0.0, 0.0, 30.0), (6.0, 0.0, 30.0), (0.0, 6.0, 30.0));
       P_Fore : constant Polygon := Make_Triangle (2, Red_Color, (0.0, 0.0, 5.0), (6.0, 0.0, 5.0), (0.0, 6.0, 5.0));
-      List   : Polygon_Array := (1 => P_Fore, 2 => P_Back);
+      List   : Polygon_Array := [1 => P_Fore, 2 => P_Back];
    begin
       Clear_Framebuffer (Buf, Black_Color);
       Render_Centroid (List, Buf);
@@ -149,7 +147,7 @@ begin
       Check ("8.3 Pixel outside bounds remains Black", Buf (7, 7) = Black_Color);
    end;
 
-   -- TEST 9 - Newell Precedence Predicates
+   -- TEST 9 - Newell Precedence Heuristics
    Put_Line ("TEST 9 - Newell Precedence Heuristics");
    declare
       P_Distant : constant Polygon := Make_Triangle (1, Red_Color, (0.0, 0.0, 100.0), (2.0, 0.0, 100.0), (0.0, 2.0, 100.0));
@@ -170,7 +168,7 @@ begin
       Buf   : Framebuffer (0 .. 7, 0 .. 7);
       P_Far : constant Polygon := Make_Triangle (1, Green_Color, (0.0, 0.0, 80.0), (5.0, 0.0, 80.0), (0.0, 5.0, 80.0));
       P_Mid : constant Polygon := Make_Triangle (2, Red_Color, (0.0, 0.0, 40.0), (5.0, 0.0, 40.0), (0.0, 5.0, 40.0));
-      List  : Polygon_Array := (1 => P_Mid, 2 => P_Far);
+      List  : Polygon_Array := [1 => P_Mid, 2 => P_Far];
    begin
       Clear_Framebuffer (Buf, Black_Color);
       Render_Newell_Sorted (List, Buf);
@@ -185,7 +183,7 @@ begin
       Buf    : Framebuffer (0 .. 7, 0 .. 7);
       P1     : constant Polygon := Make_Triangle (1, Red_Color, (0.0, 0.0, 50.0), (5.0, 0.0, 50.0), (0.0, 5.0, 50.0));
       P2     : constant Polygon := Make_Triangle (2, Blue_Color, (0.0, 0.0, 10.0), (5.0, 0.0, 10.0), (0.0, 5.0, 10.0));
-      List   : constant Polygon_Array := (1 => P2, 2 => P1);
+      List   : constant Polygon_Array := [1 => P2, 2 => P1];
    begin
       Clear_Framebuffer (Buf, Black_Color);
       Render_Topological (List, Buf);
@@ -198,10 +196,7 @@ begin
    Put_Line ("TEST 12 - Cyclic Overlap Detection");
    declare
       Buf : Framebuffer (0 .. 7, 0 .. 7);
-      -- Polygons forming an artificial cyclic test structure cannot occur under
-      -- planar centroid ordering without synthetic cycle injection. We trigger
-      -- edge validation using an empty array and zero-length boundaries.
-      Empty_List : constant Polygon_Array (1 .. 0) := (others => <>);
+      Empty_List : constant Polygon_Array (1 .. 0) := [others => <>];
       Exception_Caught : Boolean := False;
    begin
       Clear_Framebuffer (Buf, Black_Color);
@@ -215,7 +210,7 @@ begin
               (Vertex_Count => 1,
                Id           => 99,
                Color        => Red_Color,
-               Vertices     => (1 => (0.0, 0.0, 0.0)));
+               Vertices     => [1 => (0.0, 0.0, 0.0)]);
             Dummy : Depth_Value;
          begin
             Dummy := Min_Depth (Bad_P);
@@ -234,7 +229,7 @@ begin
    declare
       Buf        : Framebuffer (0 .. 7, 0 .. 7);
       Single_Arr : Polygon_Array :=
-        (1 => Make_Triangle (1, Blue_Color, (0.0, 0.0, 5.0), (4.0, 0.0, 5.0), (0.0, 4.0, 5.0)));
+        [1 => Make_Triangle (1, Blue_Color, (0.0, 0.0, 5.0), (4.0, 0.0, 5.0), (0.0, 4.0, 5.0))];
       Empty_Arr  : Polygon_Array (1 .. 0);
    begin
       Clear_Framebuffer (Buf, Black_Color);
