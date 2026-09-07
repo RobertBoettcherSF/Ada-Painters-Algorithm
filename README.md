@@ -80,7 +80,7 @@ TEST 13 - Edge Cases
 ```
 
 ## Testing
-The test suite (`tests.adb`) performs systematic verification and validation[cite: 1, 2]:
+The test suite (`tests.adb`) performs systematic verification and validation:
 1. **Functional Correctness:** Validates depth algorithms (min/max/centroid), 2D polygon intersection math, bounding box queries, and framebuffer clearing[cite: 1, 2].
 2. **Algorithm Variants:** Directly verifies ordering and rendering output for Standard, Centroid, Newell-Newell-Sancha, and Topological approaches[cite: 1, 2].
 3. **Overpainting Validation:** Validates pixel overwrites within the buffer to confirm that foreground geometry correctly supersedes background fragments[cite: 1, 2].
