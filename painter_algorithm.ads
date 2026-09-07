@@ -39,7 +39,7 @@ package Painter_Algorithm is
    type Vertex_Array is array (Positive range <>) of Point_3D;
 
    -- Convex polygon representation with at least 3 vertices
-   type Polygon (Vertex_Count : Positive) is record
+   type Polygon (Vertex_Count : Positive := 3) is record
       Id       : Positive;
       Color    : RGBA_Color;
       Vertices : Vertex_Array (1 .. Vertex_Count);
