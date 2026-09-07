@@ -1,25 +1,25 @@
 # Painter's Algorithm in Ada 2023
 
 ## Project Overview
-The Painter's Algorithm (also known as priority fill or depth-sort rendering) is a classic 3D computer graphics technique for hidden-surface determination[cite: 1, 2]. Polygons in a scene are ordered by distance from the viewpoint and rasterized into the framebuffer from farthest to nearest, allowing closer geometry to naturally overpaint more distant elements[cite: 1, 2]. This Ada 2023 implementation provides four core algorithmic variants: standard depth-sort based on maximum Z values, centroid depth-sort, the Newell-Newell-Sancha priority sorting method with bounding-box overlap heuristics, and a dependency-graph topological sort capable of detecting unresolvable cyclic overlaps[cite: 1, 2].
+The Painter's Algorithm (also known as priority fill or depth-sort rendering) is a classic 3D computer graphics technique for hidden-surface determination. Polygons in a scene are ordered by distance from the viewpoint and rasterized into the framebuffer from farthest to nearest, allowing closer geometry to naturally overpaint more distant elements. This Ada 2023 implementation provides four core algorithmic variants: standard depth-sort based on maximum Z values, centroid depth-sort, the Newell-Newell-Sancha priority sorting method with bounding-box overlap heuristics, and a dependency-graph topological sort capable of detecting unresolvable cyclic overlaps.
 
 ## Features
-* **Standard Depth Sort:** Farthest-to-nearest rendering ordered by maximum polygon depth (`Max_Depth`)[cite: 1, 2].
-* **Centroid Depth Sort:** Geometric center ordering (`Centroid_Depth`) providing balanced depth estimation across tilted polygons[cite: 1, 2].
-* **Newell-Newell-Sancha Heuristics:** Pairwise overlap resolution testing 1D Z-extents and 2D bounding boxes before sorting[cite: 1, 2].
-* **Topological Sort & Cycle Detection:** Builds a directed acyclic graph (DAG) of polygon overlaps, sorts in topological order, and raises `Cyclic_Overlap_Error` when mutual occlusions form a cycle[cite: 1, 2].
-* **Scanline / Ray-Casting Rasterizer:** 2D point-in-convex-polygon rasterization over a strongly typed `Framebuffer` matrix[cite: 1, 2].
-* **Strong Typing & Contracts:** Fully annotated with Ada 2023 contracts (`Pre`, `Post`, and `Global => null`) and domain subtypes for screen dimensions and depth values[cite: 1, 2].
+* **Standard Depth Sort:** Farthest-to-nearest rendering ordered by maximum polygon depth (`Max_Depth`).
+* **Centroid Depth Sort:** Geometric center ordering (`Centroid_Depth`) providing balanced depth estimation across tilted polygons.
+* **Newell-Newell-Sancha Heuristics:** Pairwise overlap resolution testing 1D Z-extents and 2D bounding boxes before sorting.
+* **Topological Sort & Cycle Detection:** Builds a directed acyclic graph (DAG) of polygon overlaps, sorts in topological order, and raises `Cyclic_Overlap_Error` when mutual occlusions form a cycle.
+* **Scanline / Ray-Casting Rasterizer:** 2D point-in-convex-polygon rasterization over a strongly typed `Framebuffer` matrix.
+* **Strong Typing & Contracts:** Fully annotated with Ada 2023 contracts (`Pre`, `Post`, and `Global => null`) and domain subtypes for screen dimensions and depth values.
 
 ## Usage
 
-To build the project and execute the comprehensive test suite[cite: 1, 2]:
+To build the project and execute the comprehensive test suite:
 
 ```bash
 make test
 ```
 
-Expected output[cite: 1, 2]:
+Expected output:
 
 ```text
 Running tests...
@@ -81,12 +81,12 @@ TEST 13 - Edge Cases
 
 ## Testing
 The test suite (`tests.adb`) performs systematic verification and validation:
-1. **Functional Correctness:** Validates depth algorithms (min/max/centroid), 2D polygon intersection math, bounding box queries, and framebuffer clearing[cite: 1, 2].
-2. **Algorithm Variants:** Directly verifies ordering and rendering output for Standard, Centroid, Newell-Newell-Sancha, and Topological approaches[cite: 1, 2].
-3. **Overpainting Validation:** Validates pixel overwrites within the buffer to confirm that foreground geometry correctly supersedes background fragments[cite: 1, 2].
-4. **Edge Cases & Error Handling:** Exercises empty arrays, single-polygon arrays, out-of-bounds geometries, and exception checking on invalid geometry constraints[cite: 1, 2].
+1. **Functional Correctness:** Validates depth algorithms (min/max/centroid), 2D polygon intersection math, bounding box queries, and framebuffer clearing.
+2. **Algorithm Variants:** Directly verifies ordering and rendering output for Standard, Centroid, Newell-Newell-Sancha, and Topological approaches.
+3. **Overpainting Validation:** Validates pixel overwrites within the buffer to confirm that foreground geometry correctly supersedes background fragments.
+4. **Edge Cases & Error Handling:** Exercises empty arrays, single-polygon arrays, out-of-bounds geometries, and exception checking on invalid geometry constraints.
 
 ## Building
-* **Compiler:** GNAT supporting Ada 2022/Ada 2023 (`-gnat2022` or `-gnat2023`)[cite: 1, 2].
-* **Standard Flags:** Builds with `-gnatwa` (all warnings enabled) with zero compiler warnings[cite: 1, 2].
-* **Prerequisites:** GNAT compiler toolchain (`gnatmake` or `gprbuild`) and standard GNU Make[cite: 1, 2].
+* **Compiler:** GNAT supporting Ada 2022/Ada 2023 (`-gnat2022` or `-gnat2023`).
+* **Standard Flags:** Builds with `-gnatwa` (all warnings enabled) with zero compiler warnings.
+* **Prerequisites:** GNAT compiler toolchain (`gnatmake` or `gprbuild`) and standard GNU Make.
